@@ -34,7 +34,7 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="container mx-auto">
-        <div className="flex gap-2 my-2">
+        <div className="flex gap-2 my-2 p-4">
           <button className="button-info" onClick={handlePrevQuestion}>Prev</button>
           <button className="button-info" onClick={handleNextQuestion}>Next</button>
           <button className="button-info" onClick={handleRandomQuestion}>Random</button>
