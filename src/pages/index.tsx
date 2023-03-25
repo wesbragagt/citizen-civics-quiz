@@ -66,7 +66,7 @@ const Home: NextPage = () => {
         <div className="flashcard flex flex-col gap-2">
           <LoadingRender loading={isLoading} fallback={<div>loading...</div>}>
             <>
-              <h2 className="text-lg font-bold">{question?.question}</h2>
+              <h2 className="text-lg font-bold">{question?.question.replace(/(\d+\.)/, '$1 ')}</h2>
               {
                 showAnswers ? <Answers show={showAnswers} answers={question?.answers || []} /> : <div className="show-answers-control">
                   <button className="button-info" onClick={handleShowAnswers}>Reveal answers</button>
