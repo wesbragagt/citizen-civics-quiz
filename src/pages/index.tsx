@@ -1,12 +1,29 @@
 import { type NextPage } from "next";
 import Head from "next/head";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { api } from "@/utils/api";
 
+const Answers = (props: { answers: string[], show: boolean; }) => {
+  return props.show ? <ul>
+    {props.answers.map(ans => <li key={ans}>{ans}</li>)}
+  </ul> : null
+}
+
+const LoadingRender = (props: { loading: boolean, fallback: React.ReactNode, children: React.ReactNode }) => {
+  return <>
+    {props.loading ? props.fallback : props.children}
+  </>
+}
+
 const Home: NextPage = () => {
   const [currentQuestionIndex, setQuestionIndex] = useState(0);
-  const { data: questions } = api.quiz.questions.useQuery();
+  const [showAnswers, setShowAnswers] = useState(false);
+  const { data: questions, isLoading } = api.quiz.questions.useQuery();
+
+  useEffect(() => {
+    setShowAnswers(false);
+  }, [currentQuestionIndex, setShowAnswers])
 
   const handleNextQuestion = () => {
     if (currentQuestionIndex >= 0 && currentQuestionIndex < 127) {
@@ -28,6 +45,10 @@ const Home: NextPage = () => {
     }
   }
 
+  const handleShowAnswers = () => {
+    setShowAnswers(true);
+  }
+
   const question = questions?.[currentQuestionIndex];
   return (
     <>
@@ -43,12 +64,16 @@ const Home: NextPage = () => {
           <button className="button-info" onClick={handleRandomQuestion}>Random</button>
         </div>
         <div className="flashcard flex flex-col gap-2">
-          {question &&
+          <LoadingRender loading={isLoading} fallback={<div>loading...</div>}>
             <>
               <h2 className="text-lg font-bold">{question?.question}</h2>
-              {question?.answers.map(ans => <li key={ans}>{ans}</li>)}
+              {
+                showAnswers ? <Answers show={showAnswers} answers={question?.answers || []} /> : <div className="show-answers-control">
+                  <button className="button-info" onClick={handleShowAnswers}>Reveal answers</button>
+                </div>
+              }
             </>
-          }
+          </LoadingRender>
         </div>
       </main>
     </>
