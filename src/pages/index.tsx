@@ -1,31 +1,34 @@
 import { type NextPage } from "next";
 import Head from "next/head";
-import {useState} from 'react';
+import { useState } from 'react';
 
 import { api } from "@/utils/api";
 
 const Home: NextPage = () => {
   const [currentQuestionIndex, setQuestionIndex] = useState(0);
-  const { data } = api.quiz.question.useQuery({ questionNumber: currentQuestionIndex });
+  const { data: questions } = api.quiz.questions.useQuery();
 
   const handleNextQuestion = () => {
-    if(currentQuestionIndex >= 0 && currentQuestionIndex < 127){
+    if (currentQuestionIndex >= 0 && currentQuestionIndex < 127) {
       setQuestionIndex(currentQuestionIndex + 1);
     }
   }
 
   const handlePrevQuestion = () => {
-    if(currentQuestionIndex > 0 && currentQuestionIndex <= 127){
+    if (currentQuestionIndex > 0 && currentQuestionIndex <= 127) {
       setQuestionIndex(currentQuestionIndex - 1);
     }
   }
 
   const handleRandomQuestion = () => {
-    const randomNumber = Math.floor(Math.random() * 127);
+    if (questions?.length) {
+      const randomNumber = Math.floor(Math.random() * questions.length - 1);
 
-    setQuestionIndex(randomNumber)
+      setQuestionIndex(randomNumber)
+    }
   }
 
+  const question = questions?.[currentQuestionIndex];
   return (
     <>
       <Head>
@@ -40,8 +43,12 @@ const Home: NextPage = () => {
           <button className="button-info" onClick={handleRandomQuestion}>Random</button>
         </div>
         <div className="flashcard flex flex-col gap-2">
-          <h2 className="text-lg font-bold">{data?.question?.question}</h2>
-          {data?.question?.answers.map(ans => <li key={ans}>{ans}</li>)}
+          {question &&
+            <>
+              <h2 className="text-lg font-bold">{question?.question}</h2>
+              {question?.answers.map(ans => <li key={ans}>{ans}</li>)}
+            </>
+          }
         </div>
       </main>
     </>

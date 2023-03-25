@@ -11,4 +11,8 @@ export const quizRouter = createTRPCRouter({
         question: questions[input.questionNumber] 
       };
     }),
+  questions: publicProcedure
+    .query(() => {
+      return questions;
+    }),
 });
