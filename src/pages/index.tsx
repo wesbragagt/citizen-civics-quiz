@@ -19,7 +19,7 @@ const LoadingRender = (props: { loading: boolean, fallback: React.ReactNode, chi
 const Home: NextPage = () => {
   const [currentQuestionIndex, setQuestionIndex] = useState(0);
   const [showAnswers, setShowAnswers] = useState(false);
-  const [queue, setQueue] = useState<number[]>([]);
+  const [queue, setQueue] = useState<Set<number>>(new Set());
   const { data: questions, isLoading } = api.quiz.questions.useQuery();
 
   useEffect(() => {
@@ -42,16 +42,16 @@ const Home: NextPage = () => {
     if (questions?.length) {
       const randomNumber = Math.floor(Math.random() * questions.length - 1);
       const nextQuestion = questions[randomNumber];
-      
-      if(queue.length === questions.length){
-        setQueue([]);
+      // Use a queue to store indexes past so we don't repeat questions right away      
+      if(queue.values.length === questions.length){
+        setQueue(new Set());
         setQuestionIndex(randomNumber);
         return;
       }
-      
-      if(nextQuestion && !queue.find((index) => index === randomNumber)){
+      // Store the last index in order to keep track of repeated random index 
+      if(nextQuestion && !queue.has(randomNumber)){
         setQuestionIndex(randomNumber)
-        setQueue([...queue, randomNumber])
+        setQueue(queue.add(randomNumber))
       }else{
         handleRandomQuestion();
       }
