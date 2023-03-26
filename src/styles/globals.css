@@ -7,6 +7,6 @@
 }
 
 .flashcard {
-  height: 80vh;
+  min-height: 80vh;
   @apply rounded-md shadow-lg bg-slate-50 py-6 px-8;
 }
